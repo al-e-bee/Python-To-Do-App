@@ -1,7 +1,6 @@
 # ====================
 # 1. IMPORTS
 # ====================
-import math
 
 # =========================
 # 2. FUNCTION DEFINITIONS
@@ -14,8 +13,12 @@ def show_user_menu(menu_list):
     print("---- MAIN MENU ----")
     for index, option in enumerate(menu_list, 1):
         print(f"{index}. {option}")
-    choice = input("\nPlease enter the number of your choice: ").strip()
-    return choice
+    try:
+        choice = input("\nPlease enter the number of your choice: ").strip()
+        return choice
+    except Exception as e:
+        print(f"An unexpected input error occurred: {e}")
+        return None
 
 def add_task(tasks):
     new_task = input("\nEnter the task you want to add:  ").strip()
@@ -24,14 +27,52 @@ def add_task(tasks):
         print(f"✅ Success: '{new_task}' added to your list.")
     else:
         print("❌ Error: Task cannot be blank!")
+        
+def delete_task(tasks):
+    if not tasks: 
+        print("\n❌ Error: Your to-do list is empty. There is nothing to delete.")
+        return
+    print("\n--- DELETE A TASK ---")
+    for i, task in enumerate(tasks, 1):
+        print(f"{i}. {task}")
+    try:
+        task_num = input("\nEnter the number of the task you want to delete: ").strip()
+        index_to_delete = int(task_num) - 1
+        
+        removed_task = tasks.pop(index_to_delete)
+        print(f"✅ Success: '{removed_task}' has been removed.")
+    
+    except ValueError:
+        print("❌ Invalid Input: Please enter a valid whole number (e.g., 1, 2).")
+    except IndexError:
+        print("❌ Out of Bounds: That task number does not exist in your list.")
+    except Exception as e:
+        print(f"❌ An unexpected error occurred: {e}")
+    finally:
+        print("Returning to main menu tracker...")
     
 user_menu_list = ["Add task", "View tasks", "Delete tasks", "Quit application"]
 user_tasks = []
 
 greet_user("Ali")
 
+menu_requested = True
+
 while True:
-    user_choice = show_user_menu(user_menu_list)
+    if menu_requested:
+        print("--- MAIN MENU ---")
+        for index, option in enumerate(user_menu_list, 1):
+            print(f"{index}. {option}")
+        print("-----------------")
+        
+    user_choice = input("Enter choice (or hit Enter to show menu choices again): ").strip()
+    
+    if user_choice == "":
+        menu_requested = True
+        print()
+        continue
+    
+    menu_requested = False
     
     if user_choice == "1":
         add_task(user_tasks)
@@ -47,11 +88,13 @@ while True:
         print()
     
     elif user_choice == "3":
-        print("\nDelete functionality coming up next!")
+        delete_task(user_tasks)
+        print()
         
     elif user_choice == "4":
-        print("\nthank you for using To-Do App! Goodbye.")
+        print("\nThank you for using To-Do App! Goodbye.")
         break
     
     else:
-        print("\n⚠️ Invalid selection. Please type 1, 2, 3, or 4.\n")
+        print("\n⚠️ Invalid selection. Please choose an option from 1 to 4.\n")
+        menu_requested = True
