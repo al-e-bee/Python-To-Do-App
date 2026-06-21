@@ -1,25 +1,25 @@
-# ====================
-# 1. IMPORTS
-# ====================
-
 # =========================
-# 2. FUNCTION DEFINITIONS
+# 1. FUNCTION DEFINITIONS
 # =========================
 
 def greet_user(name):
     print(f"Welcome {name}!")
 
-def show_user_menu(menu_list):
-    print("---- MAIN MENU ----")
-    for index, option in enumerate(menu_list, 1):
-        print(f"{index}. {option}")
-    try:
-        choice = input("\nPlease enter the number of your choice: ").strip()
-        return choice
-    except Exception as e:
-        print(f"An unexpected input error occurred: {e}")
-        return None
+def show_user_menu(menu_list, should_print_details):
+    if should_print_details:
+        print("\n---- MAIN MENU ----")
+        for index, option in enumerate(menu_list, 1):
+                print(f"{index}. {option}")
+        print("---------------")
+        prompt = "Please enter your choice (1 - 4): "
+    else:
+        prompt = "Enter choice (or press Enter to view menu choices again): "
+    choice = input(prompt).strip()
 
+    if choice == "":
+        return choice, True
+    return choice, False
+    
 def add_task(tasks):
     new_task = input("\nEnter the task you want to add:  ").strip()
     if new_task:
@@ -50,35 +50,30 @@ def delete_task(tasks):
         print(f"❌ An unexpected error occurred: {e}")
     finally:
         print("Returning to main menu tracker...")
-    
+        
+# =========================================
+# 2. GLOBAL VARIABLES & APP INITIALIZATION
+# =========================================    
 user_menu_list = ["Add task", "View tasks", "Delete tasks", "Quit application"]
 user_tasks = []
 
 greet_user("Ali")
-
 menu_requested = True
 
+# ========================================
+# 3. MAIN RUNTIME LOOP
+# ========================================
 while True:
-    if menu_requested:
-        print("--- MAIN MENU ---")
-        for index, option in enumerate(user_menu_list, 1):
-            print(f"{index}. {option}")
-        print("-----------------")
-        
-    user_choice = input("Enter choice (or hit Enter to show menu choices again): ").strip()
+   user_choice, menu_requested = show_user_menu(user_menu_list, menu_requested)
+   
+   if user_choice == "":
+       continue
     
-    if user_choice == "":
-        menu_requested = True
-        print()
-        continue
-    
-    menu_requested = False
-    
-    if user_choice == "1":
+   if user_choice == "1":
         add_task(user_tasks)
         print(f"Current tasks: {user_tasks}\n")
     
-    elif user_choice == "2":
+   elif user_choice == "2":
         print("\n---YOUR TASKS ---")
         if not user_tasks:
             print("Your list is empty!")
@@ -87,14 +82,14 @@ while True:
                 print(f"{i}. {task}")
         print()
     
-    elif user_choice == "3":
+   elif user_choice == "3":
         delete_task(user_tasks)
         print()
         
-    elif user_choice == "4":
+   elif user_choice == "4":
         print("\nThank you for using To-Do App! Goodbye.")
         break
     
-    else:
+   else:
         print("\n⚠️ Invalid selection. Please choose an option from 1 to 4.\n")
         menu_requested = True
